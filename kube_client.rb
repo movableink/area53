@@ -1,5 +1,6 @@
 require 'kubeclient'
 TOKEN_PATH = ENV['TOKEN_PATH'] || '/var/run/secrets/kubernetes.io/serviceaccount/token'
+LABEL_SELECTOR = ENV['LABEL_SELECTOR']
 
 class KubeClient
   def initialize(logger, version, server_suffix)
@@ -8,12 +9,16 @@ class KubeClient
     @server_suffix = server_suffix
   end
 
-  def watch_services
-    client.watch_services(label_selector: 'dns=route53')
+  def watch_pods
+    client.watch_pods(label_selector: LABEL_SELECTOR)
   end
 
-  def watch_ingresses
-    client.watch_entities('Ingress')
+  def get_node(name)
+    client.get_node(name)
+  end
+
+  def get_pods
+    client.get_pods(label_selector: LABEL_SELECTOR)
   end
 
   private

@@ -1,3 +1,5 @@
+REGION = ENV['REGION'] || 'us-east-1'
+
 class Route53Client
   require 'aws-sdk'
 
@@ -11,7 +13,7 @@ class Route53Client
   end
 
   def create_client
-    Aws::Route53::Client.new
+    Aws::Route53::Client.new(region: REGION)
   end
 
   def get_action(notice)
@@ -29,7 +31,7 @@ class Route53Client
     @hosted_zone_name ||= client.get_hosted_zone(id: ENV['HOSTED_ZONE_ID']).hosted_zone.name
   end
 
-  def change_dns(host_name, resource_value, type, action)
+  def change_dns(host_name, resource_values, type, action)
     client.change_resource_record_sets({
                                            hosted_zone_id: @hosted_zone_id,
                                            change_batch: {
@@ -39,9 +41,7 @@ class Route53Client
                                                                  name: host_name,
                                                                  type: type,
                                                                  ttl: dns_ttl,
-                                                                 resource_records: [{
-                                                                                        value: resource_value
-                                                                                    }]
+                                                                 resource_records: resource_values.map{|v| {value: v }}
                                                              }
                                                          }]
                                            }

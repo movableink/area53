@@ -1,2 +1,3 @@
-FROM ruby:2.3-onbuild
+FROM ruby:2.4-onbuild
+
 CMD ["./app.rb"]
